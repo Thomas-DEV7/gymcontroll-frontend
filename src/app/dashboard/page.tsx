@@ -1,34 +1,57 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { getTrainings } from '@/services/trainings';
+
+interface Training {
+  uuid: string;
+  name: string;
+}
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
+  const [trainings, setTrainings] = useState<Training[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login');
-    }
-  }, [user, router]);
+    const fetchTrainings = async () => {
+      try {
+        const response = await getTrainings();
+        setTrainings(response.data);
+      } catch (error) {
+        console.error('Failed to fetch trainings', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!user) {
-    return null; // ou um loading spinner
+    fetchTrainings();
+  }, []);
+
+  if (loading) {
+    return <p className="text-gray-300">Loading trainings...</p>;
   }
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <h1 className="text-3xl font-bold mb-4">Olá, {user.name}!</h1>
-      <p className="text-gray-600 mb-8">Seja bem-vindo ao GymControll!</p>
+    <div>
+      <h1 className="text-3xl font-bold text-white mb-8">Welcome, {user?.name} 👋</h1>
 
-      <button
-        onClick={logout}
-        className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
-      >
-        Sair
-      </button>
-    </main>
+      <section>
+        <h2 className="text-2xl font-semibold text-purple-400 mb-4">Your Trainings</h2>
+
+        {trainings.length === 0 ? (
+          <p className="text-gray-400">No trainings found.</p>
+        ) : (
+          <ul className="space-y-4">
+            {trainings.map((training) => (
+              <li key={training.uuid} className="p-4 bg-gray-800 rounded-lg shadow-md text-white">
+                {training.name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
   );
 }

@@ -5,7 +5,8 @@ import Cookies from 'js-cookie';
 import { login as loginService, me as meService, logout as logoutService } from '@/services/auth';
 
 interface User {
-  id: string;
+  id: number;
+  uuid: string;
   name: string;
   email: string;
 }
@@ -25,27 +26,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadUser = async () => {
       const token = Cookies.get('token');
-      if (token) {
+      if (token && !user) { // novo: só busca se tiver token e não tiver usuário carregado
         try {
           const response = await meService();
           setUser(response.data);
         } catch (error) {
           Cookies.remove('token');
+          setUser(null);
         }
       }
     };
     loadUser();
-  }, []);
+  }, [user]);
 
   const login = async (email: string, password: string) => {
     const response = await loginService({ email, password });
-    Cookies.set('token', response.data.token);
-    const userResponse = await meService();
-    setUser(userResponse.data);
+    Cookies.set('token', response.token); // agora salva corretamente o token retornado
+    setUser(response.user); // já salva o user retornado diretamente
   };
 
   const logout = async () => {
-    await logoutService();
+    try {
+      await logoutService();
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
     Cookies.remove('token');
     setUser(null);
   };
