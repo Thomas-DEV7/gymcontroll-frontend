@@ -26,11 +26,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Função para carregar o usuário via /me
+  // Função para buscar o user do localStorage
+  const loadUserFromStorage = () => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  };
+
+  // Função para salvar o user no localStorage
+  const saveUserToStorage = (user: User | null) => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  };
+
   const refreshUser = async () => {
     const token = Cookies.get('token');
     if (!token) {
       setUser(null);
+      saveUserToStorage(null);
       setLoading(false);
       return;
     }
@@ -38,23 +55,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await meService();
       setUser(response.data);
+      saveUserToStorage(response.data);
     } catch (error) {
       console.error('Failed to refresh user session:', error);
       Cookies.remove('token');
       setUser(null);
+      saveUserToStorage(null);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    refreshUser();
+    loadUserFromStorage(); // Primeiro carrega do localStorage
+    refreshUser();         // Depois tenta atualizar da API
   }, []);
 
   const login = async (email: string, password: string) => {
     const response = await loginService({ email, password });
     Cookies.set('token', response.token);
     setUser(response.user);
+    saveUserToStorage(response.user);
   };
 
   const logout = async () => {
@@ -65,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     Cookies.remove('token');
     setUser(null);
+    saveUserToStorage(null);
   };
 
   return (
