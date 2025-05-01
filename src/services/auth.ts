@@ -7,7 +7,7 @@ interface LoginData {
 
 export async function login(data: LoginData) {
   const response = await api.post('/login', data);
-  return response.data; 
+  return response.data;
 }
 
 export async function me() {
@@ -19,3 +19,10 @@ export async function logout() {
   const response = await api.post('/logout');
   return response.data;
 }
+
+export const updateProfile = (data: {
+  name?: string;
+  phone?: string;
+  birthdate?: string;
+  address?: string;
+}) => api.put('/me', data);
