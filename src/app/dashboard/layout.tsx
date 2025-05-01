@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
+import { Dumbbell, User } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { logout, user } = useAuth();
@@ -48,11 +49,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         <nav className="flex-1 space-y-6">
-          <Link href="/dashboard" className={`block ${pathname === '/dashboard' ? 'text-purple-400' : 'hover:text-purple-400'} transition`}>
-            {menuOpen ? 'Trainings' : '🏋️'}
+          <Link href="/dashboard" className={`flex items-center space-x-2 ${pathname === '/dashboard' ? 'text-purple-400' : 'hover:text-purple-400'} transition`}>
+            <Dumbbell className="w-5 h-5" />
+            {menuOpen && <span>Trainings</span>}
           </Link>
-          <Link href="/dashboard/profile" className={`block ${pathname === '/dashboard/profile' ? 'text-purple-400' : 'hover:text-purple-400'} transition`}>
-            {menuOpen ? 'Profile' : '👤'}
+          <Link href="/dashboard/profile" className={`flex items-center space-x-2 ${pathname === '/dashboard/profile' ? 'text-purple-400' : 'hover:text-purple-400'} transition`}>
+            <User className="w-5 h-5" />
+            {menuOpen && <span>Profile</span>}
           </Link>
         </nav>
       </aside>
