@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
-import { Dumbbell, User } from 'lucide-react';
+import { ChevronLeft, ChevronLeftCircle, ChevronRight, ChevronRightCircle, Dumbbell, LogOut, User, UserCircle } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { logout, user, loading } = useAuth();
@@ -36,8 +36,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             onClick={() => setMenuOpen(!menuOpen)}
             className="text-purple-400 hover:text-purple-600 transition"
           >
-            {menuOpen ? '←' : '→'}
-          </button>
+            {menuOpen ? (
+              <ChevronLeft className="w-5 h-5" />
+            ) : (
+              <ChevronRightCircle className="w-5 h-5" />
+            )}          </button>
         </div>
 
         <nav className="flex-1 space-y-6">
@@ -69,12 +72,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <header className="flex items-center justify-between bg-black p-4 shadow-md">
           <div />
           <div className="flex items-center space-x-4">
-            <span className="text-white">{user?.name ?? 'User'}</span>
-            <button
+            <span className="text-white flex items-center space-x-2">
+              <UserCircle className="w-5 h-5" />
+              <span>{user?.name?.split(' ')[0] ?? 'User'}</span>
+            </span>            <button
               onClick={handleLogout}
-              className="bg-purple-600 hover:bg-purple-700 transition text-white px-4 py-2 rounded-lg font-semibold"
+              className="text-purple-400 hover:text-purple-600 transition"
+              title="Logout"
             >
-              Logout
+              <LogOut className="w-5 h-5" />
             </button>
           </div>
         </header>
