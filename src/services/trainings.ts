@@ -28,3 +28,10 @@ export async function updateExercise(training_uuid: string, exercise_uuid: strin
 export async function deleteExercise(training_uuid: string, exercise_uuid: string) {
   return api.delete(`/trainings/${training_uuid}/exercises/${exercise_uuid}`);
 }
+
+
+export const updateTraining = (uuid: string, data: { name: string }) =>
+  api.put(`/trainings/${uuid}`, data);
+
+export const deleteTraining = (uuid: string) =>
+  api.delete(`/trainings/${uuid}`);
