@@ -134,7 +134,7 @@ export default function DashboardPage() {
             className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 transition text-white font-semibold px-4 py-2 rounded-lg"
           >
             <Plus className="w-5 h-5" />
-            <span>Add Training</span>
+            <span>New</span>
           </button>
         </div>
 
